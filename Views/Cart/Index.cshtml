@@ -1,0 +1,152 @@
+﻿@model List<BookStore.Models.CartItemViewModel>
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    var subtotal = Model.Sum(x => x.LineTotal);
+    var shipping = Model.Count > 0 ? 12000m : 0m;
+    var total = subtotal + shipping;
+}
+
+<main class="cartm-page">
+    <section class="cartm-main">
+        <div class="container dc-container cartm-container">
+            <div class="cartm-header">
+                <h1>Giỏ hàng của bạn</h1>
+                <p>@Model.Count sản phẩm đã được thêm vào giỏ.</p>
+            </div>
+
+            @if (Model.Count == 0)
+            {
+                <div class="cartm-empty">
+                    <h2>Giỏ hàng đang trống.</h2>
+                    <a asp-controller="Books" asp-action="Products" class="cartm-btn-outline">Khám phá sản phẩm</a>
+                </div>
+            }
+            else
+            {
+                <div class="cartm-layout">
+                    <div class="cartm-list-col">
+                        <div class="cartm-list">
+                            @foreach (var item in Model)
+                            {
+                                <article class="cartm-item">
+                                    <img src="@(string.IsNullOrWhiteSpace(item.CoverUrl) ? "https://placehold.co/180x240/10151c/e7e0d3?text=S%C3%A1ch" : item.CoverUrl)" alt="@item.Title" class="cartm-cover" onerror="this.onerror=null;this.src='https://placehold.co/180x240/10151c/e7e0d3?text=S%C3%A1ch';" />
+                                    <div class="cartm-info">
+                                        <div class="cartm-row-top">
+                                            <h2>@item.Title</h2>
+                                            <form asp-action="Remove" method="post" class="cartm-remove-form">
+                                                <input type="hidden" name="bookId" value="@item.BookId" />
+                                                <button type="submit" class="cartm-remove">×</button>
+                                            </form>
+                                        </div>
+
+                                        <p class="cartm-author">Ấn bản tuyển chọn</p>
+                                        <p class="cartm-desc">Bìa cứng cao cấp, hoàn thiện tinh xảo phù hợp cho bộ sưu tập lâu dài.</p>
+
+                                        <div class="cartm-qty-row">
+                                            <div class="cartm-qty-box">
+                                                <form asp-action="UpdateQuantity" method="post" class="d-inline">
+                                                    <input type="hidden" name="bookId" value="@item.BookId" />
+                                                    <input type="hidden" name="quantity" value="@(item.Quantity - 1)" />
+                                                    <button type="submit" class="cartm-qty-btn">−</button>
+                                                </form>
+                                                <span>@item.Quantity</span>
+                                                <form asp-action="UpdateQuantity" method="post" class="d-inline">
+                                                    <input type="hidden" name="bookId" value="@item.BookId" />
+                                                    <input type="hidden" name="quantity" value="@(item.Quantity + 1)" />
+                                                    <button type="submit" class="cartm-qty-btn">+</button>
+                                                </form>
+                                            </div>
+                                            <strong class="cartm-line-total">@item.LineTotal.ToString("N0") VND</strong>
+                                        </div>
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="cartm-summary-col">
+                        <aside class="cartm-summary">
+                            <h3>Tóm tắt đơn hàng</h3>
+
+                            <div class="cartm-sline">
+                                <span>Tạm tính</span>
+                                <strong>@subtotal.ToString("N0") VND</strong>
+                            </div>
+                            <div class="cartm-sline">
+                                <span>Phí vận chuyển</span>
+                                <strong>@shipping.ToString("N0") VND</strong>
+                            </div>
+                            <div class="cartm-sline cartm-tax">
+                                <span>Thuế (tính khi thanh toán)</span>
+                                <strong>—</strong>
+                            </div>
+
+                            <div class="cartm-total">
+                                <span>Tổng cộng</span>
+                                <div>
+                                    <strong>@total.ToString("N0") VND</strong>
+                                    <small>Đơn vị tiền tệ: VND</small>
+                                </div>
+                            </div>
+
+                            <a asp-action="Checkout" class="cartm-btn-checkout">Tiến hành thanh toán</a>
+
+                            <ul class="cartm-notes">
+                                <li><strong>Đóng gói chuẩn bảo quản</strong><span>Mỗi sách được bọc chống ẩm và gia cố an toàn khi vận chuyển.</span></li>
+                                <li><strong>Cam kết chất lượng</strong><span>Sản phẩm được kiểm tra kỹ trước khi giao đến bạn.</span></li>
+                            </ul>
+                        </aside>
+
+                        <p class="cartm-help">Cần hỗ trợ đặt hàng?<br /><a asp-controller="Home" asp-action="About">Liên hệ đội ngũ tư vấn</a></p>
+
+                        <div class="cartm-extra-actions">
+                            <a asp-controller="Books" asp-action="Products" class="cartm-btn-outline">Tiếp tục mua sắm</a>
+                            <form asp-action="Clear" method="post" class="d-inline">
+                                <button type="submit" class="cartm-btn-outline">Xóa giỏ hàng</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <footer class="cartm-footer">
+        <div class="container dc-container cartm-container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <h4>The Digital Curator</h4>
+                    <p>Hiệu sách tuyển chọn dành cho người yêu tri thức và trải nghiệm đọc chất lượng.</p>
+                </div>
+                <div class="col-lg-3">
+                    <h5>Danh mục</h5>
+                    <ul>
+                        <li>Ấn bản hiếm</li>
+                        <li>Nghệ thuật & thiết kế</li>
+                        <li>Tạp chí</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h5>Hỗ trợ</h5>
+                    <ul>
+                        <li>Vận chuyển</li>
+                        <li>Đổi trả</li>
+                        <li>Liên hệ</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h5>Bản tin</h5>
+                    <p>Nhận cập nhật hằng tuần về sách mới và đợt phát hành giới hạn.</p>
+                    <form onsubmit="return false;" class="cartm-newsletter">
+                        <input type="email" placeholder="Email của bạn" />
+                        <button type="submit">Đăng ký</button>
+                    </form>
+                </div>
+            </div>
+            <div class="cartm-footnote">© 2024 THE DIGITAL CURATOR. ĐÃ ĐĂNG KÝ BẢN QUYỀN.</div>
+        </div>
+    </footer>
+</main>
+
+
+

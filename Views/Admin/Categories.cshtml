@@ -1,0 +1,72 @@
+﻿@model BookStore.Models.AdminCategoriesViewModel
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+}
+
+<section class="hero mb-4">
+    <h1 class="h3 mb-1">Quản lý danh mục</h1>
+    <p class="text-muted mb-0">Tạo danh mục mới, đổi tên và xóa danh mục khi không còn sách.</p>
+</section>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <section class="card-elevated p-3 p-lg-4">
+            <h2 class="h5 mb-3">Thêm danh mục</h2>
+            <form asp-action="CreateCategory" method="post">
+                <label class="form-label" asp-for="CreateInput.Name">Tên danh mục</label>
+                <input asp-for="CreateInput.Name" class="form-control" placeholder="Nhập tên danh mục" />
+                <span asp-validation-for="CreateInput.Name" class="text-danger"></span>
+                <button class="btn btn-primary mt-3" type="submit">Thêm danh mục</button>
+            </form>
+        </section>
+    </div>
+
+    <div class="col-lg-7">
+        <section class="card-elevated p-3 p-lg-4">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên danh mục</th>
+                            <th class="text-center">Số sách</th>
+                            <th style="width:220px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <tr>
+                                <td>@category.Id</td>
+                                <td>
+                                    <form asp-action="RenameCategory" method="post" class="d-flex gap-2 align-items-center">
+                                        <input type="hidden" name="id" value="@category.Id" />
+                                        <input type="text" name="Name" class="form-control form-control-sm" value="@category.Name" />
+                                        <button class="btn btn-outline-primary btn-sm" type="submit">Lưu</button>
+                                    </form>
+                                </td>
+                                <td class="text-center">@Model.BookCounts.GetValueOrDefault(category.Id, 0)</td>
+                                <td>
+                                    <form asp-action="DeleteCategory" method="post" onsubmit="return confirm('Bạn chắc chắn muốn xóa danh mục này?')">
+                                        <input type="hidden" name="id" value="@category.Id" />
+                                        <button class="btn btn-outline-danger btn-sm" type="submit">Xóa danh mục</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+
+
+
+

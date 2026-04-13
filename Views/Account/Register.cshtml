@@ -1,0 +1,85 @@
+﻿@model BookStore.Models.RegisterInputModel
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<main class="authx-page">
+    <section class="authx-main">
+        <div class="container dc-container authx-container">
+            <div class="row g-5 align-items-start">
+                <div class="col-lg-6">
+                    <div class="authx-brand">THE DIGITAL CURATOR</div>
+                    <h1 class="authx-hero-title">Bắt đầu hành trình<br />xây dựng tủ sách<br />của riêng bạn.</h1>
+                    <p class="authx-hero-copy">
+                        Tạo tài khoản để lưu danh sách yêu thích, theo dõi đơn hàng và khám phá các tuyển chọn mới nhất.
+                    </p>
+
+                    <figure class="authx-hero-figure">
+                        <img src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=1200&auto=format&fit=crop" alt="Sách tuyển chọn" />
+                        <figcaption>"Một cuốn sách hay có thể thay đổi cách bạn nhìn thế giới."</figcaption>
+                    </figure>
+                </div>
+
+                <div class="col-lg-6">
+                    <section class="authx-card">
+                        <h2>Đăng ký</h2>
+                        <p class="authx-card-sub">Tạo tài khoản để bắt đầu trải nghiệm.</p>
+
+                        <form asp-action="Register" method="post" class="authx-form">
+                            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                            <div class="authx-field">
+                                <label asp-for="FullName">Họ và tên</label>
+                                <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+
+                            <div class="authx-field">
+                                <label asp-for="Email">Email</label>
+                                <input asp-for="Email" class="form-control" placeholder="tenban@email.com" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="authx-field">
+                                <label asp-for="Password">Mật khẩu</label>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="........" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="authx-field">
+                                <label asp-for="ConfirmPassword">Nhập lại mật khẩu</label>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="........" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+
+                            <button type="submit" class="authx-submit">Tạo tài khoản</button>
+                        </form>
+
+                        <div class="authx-join-wrap">
+                            <p>Bạn đã có tài khoản?</p>
+                            <a asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" class="authx-join-link">Đăng nhập</a>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="authx-footer">
+        <div class="container dc-container authx-foot-inner">
+            <span>© 2024 THE DIGITAL CURATOR. ĐÃ ĐĂNG KÝ BẢN QUYỀN.</span>
+            <div>
+                <a href="#">Chính sách bảo mật</a>
+                <a href="#">Điều khoản dịch vụ</a>
+                <a href="#">Hỗ trợ</a>
+            </div>
+        </div>
+    </footer>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

@@ -1,0 +1,183 @@
+﻿@model BookStore.Models.BooksIndexViewModel
+@{
+    ViewData["Title"] = "Trang chủ";
+    var featured = Model.Books.FirstOrDefault();
+    var recentArrivals = Model.Books.Take(4).ToList();
+}
+
+<main class="homec-page">
+    <section class="homec-hero">
+        <div class="homec-hero-overlay"></div>
+        <div class="container dc-container homec-hero-content">
+            <p class="homec-kicker">THÀNH LẬP 2024</p>
+            <h1>Tuyển chọn những <em>tác phẩm</em> độc bản.</h1>
+            <p>
+                Một không gian sách số dành cho các ấn bản hiếm, triết học và nghệ thuật.
+                Chúng tôi không chỉ bán sách, chúng tôi gìn giữ giá trị của tri thức.
+            </p>
+            <div class="homec-actions">
+                <a asp-controller="Books" asp-action="Products" class="homec-btn">Khám phá sản phẩm</a>
+                <a href="#curated" class="homec-btn homec-btn-ghost">Kho lưu trữ</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="homec-featured">
+        <div class="container dc-container">
+            @if (featured is not null)
+            {
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-5">
+                        <a asp-controller="Books" asp-action="Details" asp-route-id="@featured.Id">
+                            <img src="@(string.IsNullOrWhiteSpace(featured.CoverUrl) ? "https://placehold.co/700x900?text=S%C3%A1ch" : featured.CoverUrl)" alt="@featured.Title" class="homec-featured-cover" />
+                        </a>
+                    </div>
+                    <div class="col-lg-7">
+                        <p class="homec-kicker">LỰA CHỌN CỦA BIÊN TẬP VIÊN</p>
+                        <h2>
+                            <a asp-controller="Books" asp-action="Details" asp-route-id="@featured.Id" class="homec-title-link">@featured.Title</a>
+                        </h2>
+                        <p class="homec-quote">"Một tác phẩm sâu sắc về không gian tri thức, sự tĩnh lặng và trải nghiệm đọc sách chạm tới chiều sâu tư duy."</p>
+
+                        <div class="homec-meta-row"><span>TÁC GIẢ</span><strong>@featured.Author</strong></div>
+                        <div class="homec-meta-row"><span>PHIÊN BẢN</span><strong>Giới hạn 1000 bản</strong></div>
+                        <div class="homec-meta-row"><span>GIÁ</span><strong>@featured.Price.ToString("N0") VND</strong></div>
+
+                        <div class="mt-4">
+                            <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
+                                <input type="hidden" name="bookId" value="@featured.Id" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="homec-gold-btn" @(featured.Stock == 0 ? "disabled" : null)>Thêm vào giỏ</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section id="curated" class="homec-curated">
+        <div class="container dc-container">
+            <h3>Tủ sách tuyển chọn</h3>
+            <div class="homec-underline"></div>
+
+            <div class="homec-curated-grid">
+                <article class="homec-panel homec-panel-lg" style="background-image:url('https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=1400');">
+                    <div>
+                        <small>BỘ SƯU TẬP QUÝ HIẾM</small>
+                        <h4>Triết học hiện đại</h4>
+                        <span>XEM TUYỂN CHỌN</span>
+                    </div>
+                </article>
+
+                <article class="homec-panel" style="background-image:url('https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=900');">
+                    <div>
+                        <small>NGHỆ THUẬT THIẾT KẾ</small>
+                        <h4>Nghệ thuật hình khối</h4>
+                        <span>KHÁM PHÁ</span>
+                    </div>
+                </article>
+
+                <article class="homec-panel" style="background-image:url('https://images.unsplash.com/photo-1532012197267-da84d127e765?w=900');">
+                    <div>
+                        <small>LƯU TRỮ</small>
+                        <h4>Ấn bản hiếm</h4>
+                        <span>KHÁM PHÁ</span>
+                    </div>
+                </article>
+
+                <article class="homec-panel homec-panel-wide" style="background-image:url('https://images.unsplash.com/photo-1526243741027-444d633d7365?w=1400');">
+                    <div>
+                        <small>ĐƯƠNG ĐẠI</small>
+                        <h4>Làn sóng văn học mới</h4>
+                        <span>MUA NGAY</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="homec-arrivals">
+        <div class="container dc-container">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <p class="homec-kicker mb-1">MỚI CẬP NHẬT</p>
+                    <h3 class="homec-title">Sách mới cập nhật</h3>
+                </div>
+                <a asp-controller="Books" asp-action="Products" class="homec-mini-link">XEM TOÀN BỘ DANH MỤC</a>
+            </div>
+
+            <div class="row g-4">
+                @if (recentArrivals.Count == 0)
+                {
+                    <div class="col-12"><div class="alert alert-warning">Không có dữ liệu sách.</div></div>
+                }
+                else
+                {
+                    @foreach (var book in recentArrivals)
+                    {
+                        <div class="col-6 col-lg-3">
+                            <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="homec-arrival-link">
+                                <article class="homec-arrival-card">
+                                    <img src="@(string.IsNullOrWhiteSpace(book.CoverUrl) ? "https://placehold.co/450x650?text=S%C3%A1ch" : book.CoverUrl)" alt="@book.Title" />
+                                    <h4>@book.Title</h4>
+                                    <p>@book.Author</p>
+                                    <strong>@book.Price.ToString("N0")</strong>
+                                </article>
+                            </a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="homec-journal">
+        <div class="container dc-container">
+            <div class="row g-4 align-items-start">
+                <div class="col-lg-4">
+                    <p class="homec-kicker">BIÊN TẬP</p>
+                    <h3 class="homec-title">Từ tạp chí</h3>
+                    <p class="homec-journal-copy">Những bài viết chuyên sâu về lịch sử sách, nghệ thuật chế tác và văn hóa đọc hiện đại.</p>
+                    <a asp-controller="Books" asp-action="Index" class="homec-mini-link">ĐỌC THÊM BÀI VIẾT</a>
+                </div>
+                <div class="col-lg-4">
+                    <article class="homec-journal-card">
+                        <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=900" alt="Bài viết 1" />
+                        <p>02/07/2026</p>
+                        <h4>Nghệ thuật in ấn cổ điển</h4>
+                    </article>
+                </div>
+                <div class="col-lg-4">
+                    <article class="homec-journal-card">
+                        <img src="https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=900" alt="Bài viết 2" />
+                        <p>15/07/2026</p>
+                        <h4>Tuyển chọn như một phong cách sống</h4>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="homec-newsletter">
+        <div class="container dc-container text-center">
+            <h3>Đăng ký nhận tin</h3>
+            <p>Nhận cập nhật định kỳ về sách hiếm và các tuyển chọn mới nhất.</p>
+            <form class="homec-newsletter-form" onsubmit="return false;">
+                <input type="email" placeholder="Địa chỉ email của bạn" />
+                <button type="submit">Đăng ký</button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="homec-footer">
+        <div class="container dc-container d-flex flex-wrap justify-content-between gap-2">
+            <span>The Digital Curator</span>
+            <span>Vận chuyển & hoàn trả &nbsp; Chính sách bảo mật &nbsp; Liên hệ &nbsp; Instagram</span>
+            <span>&copy; 2026 The Digital Curator. Đã đăng ký bản quyền.</span>
+        </div>
+    </footer>
+</main>
+
+
+

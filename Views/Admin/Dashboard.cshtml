@@ -1,0 +1,162 @@
+﻿@model BookStore.Models.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Bảng điều khiển";
+
+    var activeCollectors = Math.Max(1, Model.TotalOrders * 3);
+    var pendingOrders = Model.RecentOrders.Count(x => x.Id % 3 == 1);
+}
+
+<section class="adminx-wrap">
+    <aside class="adminx-sidebar">
+        <div>
+            <a asp-controller="Books" asp-action="Index" class="adminx-brand">The Digital Curator</a>
+            <div class="adminx-role">Quản trị biên tập</div>
+        </div>
+
+        <nav class="adminx-menu">
+            <a class="adminx-menu-item active" asp-action="Dashboard">Bảng điều khiển</a>
+            <a class="adminx-menu-item" asp-action="Index">Kho sách</a>
+            <a class="adminx-menu-item" asp-action="Orders">Đơn hàng</a>
+        </nav>
+
+        <div class="adminx-side-foot">
+            <a class="adminx-menu-item" asp-controller="Home" asp-action="Privacy">Hỗ trợ</a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="adminx-signout">Đăng xuất</button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="adminx-main">
+        <header class="adminx-topbar">
+            <div>
+                <h1>Tổng quan vận hành</h1>
+                <div class="adminx-tabs">
+                    <span class="active">Bảng điều khiển</span>
+                    <span>Báo cáo</span>
+                </div>
+            </div>
+            <div class="adminx-icons" aria-label="Điều khiển bảng điều khiển">
+                <span>&#128276;</span>
+                <span>&#9881;</span>
+                <span class="adminx-avatar">@User.Identity?.Name?.FirstOrDefault().ToString().ToUpperInvariant()</span>
+            </div>
+        </header>
+
+        <section class="adminx-kpis">
+            <article class="adminx-kpi">
+                <p>Tổng doanh thu</p>
+                <h2>@Model.TotalRevenue.ToString("N0")</h2>
+                <span class="up">&#8599;12%</span>
+            </article>
+            <article class="adminx-kpi">
+                <p>Tổng đầu sách</p>
+                <h2>@Model.TotalBooks</h2>
+                <span class="up">&#8599;8%</span>
+            </article>
+            <article class="adminx-kpi">
+                <p>Khách hàng hoạt động</p>
+                <h2>@activeCollectors.ToString("N0")</h2>
+                <span class="flat">&#8594;0%</span>
+            </article>
+            <article class="adminx-kpi">
+                <p>Đơn chờ xử lý</p>
+                <h2>@pendingOrders</h2>
+                <span class="warn">&#9679; Cần xử lý</span>
+            </article>
+        </section>
+
+        <section class="adminx-chart">
+            <div class="adminx-chart-head">
+                <div>
+                    <h3>Biểu đồ doanh thu</h3>
+                    <p>Hiệu suất bán hàng theo tháng</p>
+                </div>
+                <div class="adminx-switch">
+                    <button type="button">Theo tháng</button>
+                    <button type="button" class="active">Theo năm</button>
+                </div>
+            </div>
+
+            <svg class="adminx-chart-svg" viewBox="0 0 1000 290" preserveAspectRatio="none" aria-hidden="true">
+                <line x1="36" y1="70" x2="964" y2="70" class="grid"></line>
+                <line x1="36" y1="118" x2="964" y2="118" class="grid"></line>
+                <line x1="36" y1="166" x2="964" y2="166" class="grid"></line>
+                <line x1="36" y1="214" x2="964" y2="214" class="grid"></line>
+                <path d="M36 192 C180 168, 250 148, 340 132 C480 106, 555 92, 646 76 C760 56, 825 136, 964 58" class="trend"></path>
+                <circle cx="225" cy="148" r="4" class="dot"></circle>
+                <circle cx="412" cy="114" r="4" class="dot"></circle>
+                <circle cx="606" cy="82" r="4" class="dot"></circle>
+                <circle cx="964" cy="58" r="4" class="dot"></circle>
+            </svg>
+            <div class="adminx-months">
+                <span>TH1</span>
+                <span>TH3</span>
+                <span>TH5</span>
+                <span>TH7</span>
+                <span>TH9</span>
+                <span>TH11</span>
+            </div>
+        </section>
+
+        <section class="adminx-table-wrap">
+            <div class="adminx-table-head">
+                <div>
+                    <h3>Giao dịch gần đây</h3>
+                    <p>Theo dõi nhanh các giao dịch mới nhất</p>
+                </div>
+                <a asp-action="Orders">Xem toàn bộ đơn hàng &#8594;</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table adminx-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th class="text-end">Giá trị</th>
+                            <th class="text-end">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentOrders.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">Chưa có giao dịch nào.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var order in Model.RecentOrders)
+                            {
+                                var mod = order.Id % 3;
+                                var statusText = mod == 0 ? "Hoàn tất" : (mod == 1 ? "Đang xử lý" : "Đã hủy");
+                                var statusClass = mod == 0 ? "ok" : (mod == 1 ? "warn" : "cancel");
+                                <tr>
+                                    <td>
+                                        <a asp-action="OrderDetails" asp-route-id="@order.Id" class="adminx-ref">#ORD-@order.Id</a>
+                                    </td>
+                                    <td>
+                                        <div class="adminx-collector">
+                                            <span class="adminx-mini-avatar">@order.CustomerName.FirstOrDefault().ToString().ToUpperInvariant()</span>
+                                            @order.CustomerName
+                                        </div>
+                                    </td>
+                                    <td class="text-end fw-semibold">@order.TotalAmount.ToString("N2")</td>
+                                    <td class="text-end">
+                                        <span class="adminx-status @statusClass">@statusText</span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <p class="adminx-note">TRẠNG THÁI HỆ THỐNG: ỔN ĐỊNH • CẬP NHẬT VỪA XONG</p>
+    </div>
+</section>
+
+

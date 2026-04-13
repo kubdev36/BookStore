@@ -1,0 +1,279 @@
+﻿@model BookStore.Models.BookDetailsViewModel
+@{
+    ViewData["Title"] = "Chi tiết sách";
+    var book = Model.Book;
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+    var currentUserIdRaw = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var currentUserId = int.TryParse(currentUserIdRaw, out var parsedUserId) ? parsedUserId : 0;
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+}
+
+<main class="pdp-page">
+    <section class="pdp-main">
+        <div class="container dc-container">
+            <nav class="pdp-breadcrumb">
+                <a asp-controller="Books" asp-action="Products">Sản phẩm</a>
+                <span>&gt;</span>
+                <span>Chi tiết</span>
+                <span>&gt;</span>
+                <strong>@book.Title.ToUpperInvariant()</strong>
+            </nav>
+
+            <div class="row g-4 align-items-start">
+                <div class="col-lg-5 col-xl-5">
+                    <img src="@(string.IsNullOrWhiteSpace(book.CoverUrl) ? "https://placehold.co/760x1020?text=S%C3%A1ch" : book.CoverUrl)" class="pdp-cover" alt="@book.Title" onerror="this.onerror=null;this.src='https://placehold.co/760x1020?text=S%C3%A1ch';" />
+                    <div class="pdp-dots">
+                        <span class="active"></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                <div class="col-lg-7 col-xl-7">
+                    <h1 class="pdp-title">@book.Title</h1>
+                    <div class="pdp-author-row">
+                        <span class="pdp-author">@book.Author</span>
+                        <span class="pdp-stars">• ★ ★ ★ ★ ★</span>
+                        <span class="pdp-score">(@(Model.TotalReviews > 0 ? Model.AverageRating.ToString("0.0") : "0.0") / 5)</span>
+                        <span class="pdp-score">• @Model.TotalReviews đánh giá</span>
+                    </div>
+
+                    <div class="pdp-divider"></div>
+
+                    <p class="pdp-description-main">
+                        @(string.IsNullOrWhiteSpace(book.Description)
+                            ? "Một tác phẩm giá trị giúp mở rộng góc nhìn, nuôi dưỡng tư duy sâu và truyền cảm hứng học hỏi bền vững."
+                            : book.Description)
+                    </p>
+                    <p class="pdp-description-sub">
+                        Ấn bản The Digital Curator được hoàn thiện với chất liệu cao cấp và thiết kế bìa tinh tế, phù hợp cho bộ sưu tập lâu dài.
+                    </p>
+
+                    <div class="pdp-buy-box">
+                        <div class="pdp-price-row">
+                            <div class="pdp-price">@book.Price.ToString("N0") VND</div>
+                            <span class="pdp-badge">Ấn bản tuyển chọn</span>
+                            <div class="pdp-stock">@(book.Stock > 0 ? "Còn hàng" : "Hết hàng") • Giao nhanh trong 24h</div>
+                        </div>
+                        <div class="pdp-buy-actions">
+                            <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
+                                <input type="hidden" name="bookId" value="@book.Id" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="pdp-btn-gold" @(book.Stock == 0 ? "disabled" : null)>Thêm vào giỏ</button>
+                            </form>
+                            <a asp-controller="Cart" asp-action="Index" class="pdp-btn-dark">Mua ngay</a>
+                        </div>
+                    </div>
+
+                    <div class="pdp-specs">
+                        <div><span>Định dạng</span><strong>Bìa cứng</strong></div>
+                        <div><span>Số trang</span><strong>320 trang</strong></div>
+                        <div><span>Nhà phát hành</span><strong>Digital Curator Press</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pdp-reviews">
+        <div class="container dc-container">
+            <div class="pdp-review-head">
+                <div>
+                    <p class="pdp-kicker">ĐÁNH GIÁ TỪ ĐỘC GIẢ</p>
+                    <h2>Nhận xét sản phẩm</h2>
+                    <p>@Model.TotalReviews bình luận • Điểm trung bình @Model.AverageRating.ToString("0.0")/5</p>
+                </div>
+            </div>
+
+            @if (isAuthenticated && Model.CanReview)
+            {
+                <form asp-action="AddReview" asp-route-id="@book.Id" method="post" enctype="multipart/form-data" class="pdp-review-form">
+                    @Html.AntiForgeryToken()
+                    <div class="pdp-review-grid">
+                        <div>
+                            <label>Số sao</label>
+                            <div class="pdp-star-picker">
+                                @for (var i = 5; i >= 1; i--)
+                                {
+                                    <input type="radio" id="star-@i" name="Rating" value="@i" @(i == 5 ? "checked" : null) />
+                                    <label for="star-@i" title="@i sao">★</label>
+                                }
+                            </div>
+                        </div>
+                        <div>
+                            <label for="review-image">Ảnh minh họa (không bắt buộc)</label>
+                            <input id="review-image" name="ImageFile" type="file" class="form-control" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <label for="review-comment">Bình luận</label>
+                        <textarea id="review-comment" name="Comment" class="form-control" rows="4" placeholder="Chia sẻ cảm nhận của bạn về cuốn sách này..."></textarea>
+                    </div>
+                    <div class="mt-2">
+                        <button type="submit" class="pdp-review-submit">Gửi đánh giá</button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="pdp-review-login-note">
+                    @if (!isAuthenticated)
+                    {
+                        <text>Bạn cần <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl">đăng nhập</a> để gửi đánh giá.</text>
+                    }
+                    else
+                    {
+                        <text>Bạn chỉ có thể đánh giá sau khi đã mua sách này.</text>
+                    }
+                </div>
+            }
+
+            <div class="pdp-review-list">
+                @if (!Model.Reviews.Any())
+                {
+                    <div class="pdp-review-empty">Chưa có bình luận nào. Hãy là người đầu tiên chia sẻ cảm nhận.</div>
+                }
+                else
+                {
+                    foreach (var review in Model.Reviews)
+                    {
+                        <article class="pdp-review-item">
+                            <div class="pdp-review-meta">
+                                <strong>@review.UserFullName</strong>
+                                <span>@(new string('★', review.Rating))@(new string('☆', 5 - review.Rating))</span>
+                                <small>@review.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                            <p>@review.Comment</p>
+
+                            @if (!string.IsNullOrWhiteSpace(review.ImageUrl))
+                            {
+                                <img class="pdp-review-image" src="@review.ImageUrl" alt="Ảnh từ người dùng" onerror="this.style.display='none';" />
+                            }
+
+                            <div class="pdp-review-actions">
+                                @if (isAuthenticated && currentUserId != review.UserId)
+                                {
+                                    <form asp-action="ToggleReviewLike" asp-route-id="@book.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="reviewId" value="@review.Id" />
+                                        <button type="submit" class="pdp-like-btn @(review.IsLikedByCurrentUser ? "active" : null)">
+                                            @(review.IsLikedByCurrentUser ? "♥" : "♡") @review.LikeCount
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="pdp-like-view">♥ @review.LikeCount</span>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(review.AdminReply))
+                            {
+                                <div class="pdp-admin-reply">
+                                    <strong>Phản hồi từ @(review.AdminReplyBy ?? "Quản trị viên")</strong>
+                                    <p>@review.AdminReply</p>
+                                    @if (review.AdminReplyAt.HasValue)
+                                    {
+                                        <small>@review.AdminReplyAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+                                    }
+                                </div>
+                            }
+
+                            @if (User.Identity?.IsAuthenticated == true && User.IsInRole(BookStore.Models.UserRoles.Admin))
+                            {
+                                <form asp-action="ReplyReview" asp-route-id="@book.Id" method="post" class="pdp-admin-reply-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="reviewId" value="@review.Id" />
+                                    <textarea name="replyContent" class="form-control" rows="2" placeholder="Phản hồi bình luận này..."></textarea>
+                                    <button type="submit" class="pdp-admin-reply-btn">Gửi phản hồi</button>
+                                </form>
+                            }
+                        </article>
+                    }
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="pdp-related">
+        <div class="container dc-container">
+            <div class="d-flex justify-content-between align-items-end mb-3">
+                <div>
+                    <p class="pdp-kicker">CÓ THỂ BẠN QUAN TÂM</p>
+                    <h2>Sách liên quan</h2>
+                </div>
+                <a asp-controller="Books" asp-action="Products" class="pdp-explore-link">Khám phá sản phẩm</a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-6 col-lg-3">
+                    <article class="pdp-related-card">
+                        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=700&auto=format&fit=crop" alt="Sách liên quan 1" />
+                        <p class="pdp-related-kicker">Tư duy tập trung</p>
+                        <h3>Deep Work</h3>
+                        <span>Cal Newport</span>
+                    </article>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <article class="pdp-related-card">
+                        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=700&auto=format&fit=crop" alt="Sách liên quan 2" />
+                        <p class="pdp-related-kicker">Nghệ thuật sáng tạo</p>
+                        <h3>The Creative Act</h3>
+                        <span>Rick Rubin</span>
+                    </article>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <article class="pdp-related-card">
+                        <img src="https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=700&auto=format&fit=crop" alt="Sách liên quan 3" />
+                        <p class="pdp-related-kicker">Stoicism hiện đại</p>
+                        <h3>Stillness is the Key</h3>
+                        <span>Ryan Holiday</span>
+                    </article>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <article class="pdp-related-card">
+                        <img src="https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=700&auto=format&fit=crop" alt="Sách liên quan 4" />
+                        <p class="pdp-related-kicker">Kỷ luật chiến lược</p>
+                        <h3>Essentialism</h3>
+                        <span>Greg McKeown</span>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="pdp-footer">
+        <div class="container dc-container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <h4>The Digital Curator</h4>
+                    <p>Hiệu sách tuyển chọn dành cho người yêu tri thức và giá trị đọc bền vững.</p>
+                </div>
+                <div class="col-lg-3">
+                    <h5>Cửa hàng</h5>
+                    <ul>
+                        <li>Chính sách bảo mật</li>
+                        <li>Điều khoản dịch vụ</li>
+                        <li>Vận chuyển</li>
+                        <li>Liên hệ</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h5>Tạp chí</h5>
+                    <ul>
+                        <li>Phỏng vấn</li>
+                        <li>Chuyên đề</li>
+                        <li>Đánh giá sách</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h5>Bản tin</h5>
+                    <form class="pdp-newsletter" onsubmit="return false;">
+                        <input type="email" placeholder="Địa chỉ email" />
+                        <button type="submit">Đăng ký</button>
+                    </form>
+                </div>
+            </div>
+            <div class="pdp-footer-bottom">© 2024 THE DIGITAL CURATOR. ĐÃ ĐĂNG KÝ BẢN QUYỀN.</div>
+        </div>
+    </footer>
+</main>

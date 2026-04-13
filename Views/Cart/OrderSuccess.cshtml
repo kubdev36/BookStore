@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Đặt hàng thành công";
+}
+
+<main class="detailx-page">
+    <section class="detailx-wrap">
+        <div class="container dc-container">
+            <div class="detailx-empty text-center">
+                <p class="detailx-kicker">ĐẶT HÀNG THÀNH CÔNG</p>
+                <h1>Cảm ơn bạn đã đặt hàng</h1>
+                <p>Mã đơn hàng của bạn là <strong>#@ViewBag.OrderId</strong>.</p>
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                    <a asp-controller="Books" asp-action="Products" class="detailx-btn-line">Tiếp tục mua sắm</a>
+                    <a asp-controller="Admin" asp-action="Orders" class="detailx-btn-gold">Xem đơn hàng</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+

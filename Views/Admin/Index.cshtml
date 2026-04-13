@@ -1,0 +1,133 @@
+﻿@model BookStore.Models.AdminBooksViewModel
+@{
+    ViewData["Title"] = "Kho sách";
+    var totalItems = Model.Books.Count;
+}
+
+<section class="adminx-wrap">
+    <aside class="adminx-sidebar">
+        <div>
+            <a asp-controller="Books" asp-action="Index" class="adminx-brand">Quản lý kho sách</a>
+            <div class="adminx-role">Quản trị biên tập</div>
+        </div>
+
+        <nav class="adminx-menu">
+            <a class="adminx-menu-item" asp-action="Dashboard">Bảng điều khiển</a>
+            <a class="adminx-menu-item active" asp-action="Index">Kho sách</a>
+            <a class="adminx-menu-item" asp-action="Orders">Đơn hàng</a>
+        </nav>
+
+        <div class="adminx-side-foot">
+            <a class="adminx-menu-item" asp-controller="Home" asp-action="Privacy">Hỗ trợ</a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="adminx-signout">Đăng xuất</button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="adminx-main invx-main">
+        <header class="adminx-topbar">
+            <div>
+                <h1>The Digital Curator</h1>
+                <div class="adminx-tabs">
+                    <a asp-action="Dashboard">Bảng điều khiển</a>
+                    <span class="active">Báo cáo</span>
+                </div>
+            </div>
+            <div class="invx-tools">
+                <input type="text" placeholder="Tìm kiếm sách..." />
+                <span>&#128276;</span>
+                <span>&#9881;</span>
+                <span class="adminx-avatar">@User.Identity?.Name?.FirstOrDefault().ToString().ToUpperInvariant()</span>
+            </div>
+        </header>
+
+        <section class="invx-headline">
+            <div>
+                <p class="invx-breadcrumb">KHO SÁCH &nbsp;&rsaquo;&nbsp; TOÀN BỘ DANH MỤC</p>
+                <h2>Danh mục sách</h2>
+                <p>Quản lý bộ sưu tập sách hiếm và các đầu sách nổi bật.</p>
+            </div>
+            <a asp-action="Create" class="invx-add-btn">+ Thêm sách mới</a>
+        </section>
+
+        <section class="invx-filter-bar">
+            <div class="invx-tabs-inline">
+                <button type="button" class="active">Tất cả tồn kho</button>
+                <button type="button">Ấn bản hiếm</button>
+                <button type="button">Ngừng phát hành</button>
+            </div>
+            <div class="invx-filter-meta">
+                <strong>@totalItems</strong>
+                <span>Tổng số sách</span>
+                <span class="sep">|</span>
+                <a asp-action="Categories">Lọc</a>
+                <a asp-action="Orders">Xuất dữ liệu</a>
+            </div>
+        </section>
+
+        <section class="invx-table-wrap">
+            <div class="table-responsive">
+                <table class="table invx-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Ảnh</th>
+                            <th>Mã sách</th>
+                            <th>Tên sách và tác giả</th>
+                            <th>Danh mục</th>
+                            <th>Giá (VND)</th>
+                            <th>Tình trạng kho</th>
+                            <th class="text-end">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Books.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">Chưa có sách trong kho.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var book in Model.Books)
+                            {
+                                var stockClass = book.Stock <= 0 ? "out" : (book.Stock <= 3 ? "low" : "ok");
+                                var stockText = book.Stock <= 0 ? "Hết hàng" : (book.Stock <= 3 ? $"Sắp hết ({book.Stock})" : $"Còn hàng ({book.Stock})");
+                                var categoryName = Model.CategoryNames.GetValueOrDefault(book.CategoryId, "Chung");
+                                <tr>
+                                    <td>
+                                        <img class="invx-cover" src="@book.CoverUrl" alt="@book.Title" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                        <span class="invx-cover-fallback" style="display:none;">Sách</span>
+                                    </td>
+                                    <td class="invx-id">#BK-@book.Id.ToString("0000")</td>
+                                    <td>
+                                        <h3>@book.Title</h3>
+                                        <p>@book.Author</p>
+                                    </td>
+                                    <td><span class="invx-category">@categoryName</span></td>
+                                    <td class="invx-price">@book.Price.ToString("N0")</td>
+                                    <td><span class="invx-stock @stockClass">@stockText</span></td>
+                                    <td class="text-end">
+                                        <a asp-action="Edit" asp-route-id="@book.Id" class="btn btn-sm btn-outline-dark">Sửa</a>
+                                        <a asp-action="Delete" asp-route-id="@book.Id" class="btn btn-sm btn-outline-danger">Xóa</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="invx-pagination">
+            <p>Hiển thị từ 1 đến @Math.Min(totalItems, 10) trong tổng @totalItems đầu sách</p>
+            <div>
+                <span class="active">1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>...</span>
+            </div>
+        </div>
+    </div>
+</section>

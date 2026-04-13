@@ -1,0 +1,52 @@
+﻿@model BookStore.Models.AdminBookFormViewModel
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Input.Title" class="form-label">Tên sách</label>
+        <input asp-for="Input.Title" class="form-control" />
+        <span asp-validation-for="Input.Title" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Input.Author" class="form-label">Tác giả</label>
+        <input asp-for="Input.Author" class="form-control" />
+        <span asp-validation-for="Input.Author" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Input.Price" class="form-label">Giá</label>
+        <input asp-for="Input.Price" class="form-control" />
+        <span asp-validation-for="Input.Price" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Input.Stock" class="form-label">Tồn kho</label>
+        <input asp-for="Input.Stock" class="form-control" />
+        <span asp-validation-for="Input.Stock" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Input.CategoryId" class="form-label">Danh mục</label>
+        <select asp-for="Input.CategoryId" class="form-select" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+            <option value="">-- Chọn danh mục --</option>
+        </select>
+        <span asp-validation-for="Input.CategoryId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-12">
+        <label asp-for="Input.Description" class="form-label">Mô tả</label>
+        <textarea asp-for="Input.Description" rows="4" class="form-control"></textarea>
+        <span asp-validation-for="Input.Description" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-12">
+        <label asp-for="Input.CoverUrl" class="form-label">Đường dẫn ảnh bìa</label>
+        <input asp-for="Input.CoverUrl" class="form-control" />
+        <span asp-validation-for="Input.CoverUrl" class="text-danger"></span>
+    </div>
+</div>
+
+
+
+
+

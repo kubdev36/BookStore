@@ -1,0 +1,184 @@
+@model BookStore.Models.AdminBookFormViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa sách";
+    var selectedCategoryName = Model.Categories.FirstOrDefault(x => x.Id == Model.Input.CategoryId)?.Name ?? "Chưa phân loại";
+}
+
+<section class="adminx-wrap">
+    <aside class="adminx-sidebar">
+        <div>
+            <a asp-controller="Books" asp-action="Index" class="adminx-brand">Quản lý kho sách</a>
+            <div class="adminx-role">Quản trị biên tập</div>
+        </div>
+
+        <nav class="adminx-menu">
+            <a class="adminx-menu-item" asp-action="Dashboard">Bảng điều khiển</a>
+            <a class="adminx-menu-item active" asp-action="Index">Kho sách</a>
+            <a class="adminx-menu-item" asp-action="Orders">Đơn hàng</a>
+        </nav>
+
+        <div class="adminx-side-foot">
+            <a class="adminx-menu-item" asp-controller="Home" asp-action="Privacy">Hỗ trợ</a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="adminx-signout">Đăng xuất</button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="adminx-main invx-main edtx-main">
+        <header class="adminx-topbar">
+            <div>
+                <h1>The Digital Curator</h1>
+                <div class="adminx-tabs">
+                    <a asp-action="Dashboard">Bảng điều khiển</a>
+                    <span class="active">Báo cáo</span>
+                </div>
+            </div>
+            <div class="invx-tools">
+                <input type="text" placeholder="Tìm kiếm sách..." />
+                <span>&#128276;</span>
+                <span>&#9881;</span>
+                <span class="adminx-avatar">@User.Identity?.Name?.FirstOrDefault().ToString().ToUpperInvariant()</span>
+            </div>
+        </header>
+
+        <form asp-action="Edit" asp-route-id="@Model.BookId" method="post">
+            <section class="edtx-headline">
+                <div>
+                    <p class="invx-breadcrumb">KHO SÁCH &nbsp;&rsaquo;&nbsp; CHỈNH SỬA SÁCH</p>
+                    <h2>Chỉnh sửa sách</h2>
+                    <p>Chỉnh sửa thông tin chi tiết và khả năng hiển thị của đầu sách đã chọn.</p>
+                </div>
+                <div class="edtx-actions">
+                    <a asp-action="Index" class="edtx-btn edtx-btn-ghost">Hủy</a>
+                    <button type="submit" class="edtx-btn edtx-btn-primary">Cập nhật sách</button>
+                </div>
+            </section>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <section class="edtx-layout">
+                <div class="edtx-col-main">
+                    <article class="edtx-card">
+                        <h3>Thông tin cơ bản</h3>
+                        <div class="edtx-divider"></div>
+
+                        <div class="edtx-field">
+                            <label asp-for="Input.Title">Tên sách</label>
+                            <input asp-for="Input.Title" class="form-control edtx-input" />
+                            <span asp-validation-for="Input.Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="edtx-grid-two">
+                            <div class="edtx-field">
+                                <label asp-for="Input.Author">Tác giả</label>
+                                <input asp-for="Input.Author" class="form-control edtx-input" />
+                                <span asp-validation-for="Input.Author" class="text-danger"></span>
+                            </div>
+                            <div class="edtx-field">
+                                <label asp-for="Input.CategoryId">Danh mục</label>
+                                <select asp-for="Input.CategoryId" class="form-select edtx-input" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+                                    <option value="">-- Chọn danh mục --</option>
+                                </select>
+                                <span asp-validation-for="Input.CategoryId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="edtx-field">
+                            <label asp-for="Input.Description">Mô tả</label>
+                            <textarea asp-for="Input.Description" rows="5" class="form-control edtx-input edtx-textarea"></textarea>
+                            <span asp-validation-for="Input.Description" class="text-danger"></span>
+                        </div>
+                    </article>
+
+                    <article class="edtx-card">
+                        <h3>Giá trị & tồn kho</h3>
+                        <div class="edtx-divider"></div>
+
+                        <div class="edtx-grid-two">
+                            <div class="edtx-field">
+                                <label asp-for="Input.Price">Giá</label>
+                                <input asp-for="Input.Price" class="form-control edtx-input" />
+                                <span asp-validation-for="Input.Price" class="text-danger"></span>
+                            </div>
+                            <div class="edtx-field">
+                                <label asp-for="Input.Stock">Tồn kho</label>
+                                <input asp-for="Input.Stock" class="form-control edtx-input" />
+                                <span asp-validation-for="Input.Stock" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="edtx-col-side">
+                    <article class="edtx-card">
+                        <h3>Ảnh bìa sách</h3>
+                        <div class="edtx-divider"></div>
+
+                        <div class="edtx-cover-wrap">
+                            <img id="edtx-cover-preview" src="@Model.Input.CoverUrl" alt="@Model.Input.Title" class="edtx-cover-preview" />
+                            <div id="edtx-cover-fallback" class="edtx-cover-fallback" style="display:none;">KHÔNG CÓ ẢNH</div>
+                        </div>
+
+                        <div class="edtx-field mb-0">
+                            <label asp-for="Input.CoverUrl">Đường dẫn ảnh bìa</label>
+                            <input asp-for="Input.CoverUrl" class="form-control edtx-input" id="Input_CoverUrl" />
+                            <span asp-validation-for="Input.CoverUrl" class="text-danger"></span>
+                        </div>
+                    </article>
+
+                    <article class="edtx-card">
+                        <h3>Trạng thái hiển thị</h3>
+                        <div class="edtx-divider"></div>
+                        <div class="edtx-status-row">
+                            <span>Danh mục hiện tại</span>
+                            <strong>@selectedCategoryName</strong>
+                        </div>
+                        <div class="edtx-status-row">
+                            <span>Hiển thị</span>
+                            <strong>@(Model.Input.Stock > 0 ? "Đang hiển thị" : "Hết hàng")</strong>
+                        </div>
+                        <div class="edtx-status-row">
+                            <span>Tình trạng tồn kho</span>
+                            <strong>@(Model.Input.Stock <= 3 ? "Sắp hết hàng" : "Ổn định")</strong>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const input = document.getElementById("Input_CoverUrl");
+            const preview = document.getElementById("edtx-cover-preview");
+            const fallback = document.getElementById("edtx-cover-fallback");
+
+            function showFallback() {
+                preview.style.display = "none";
+                fallback.style.display = "flex";
+            }
+
+            function showPreview(url) {
+                if (!url) {
+                    showFallback();
+                    return;
+                }
+
+                fallback.style.display = "none";
+                preview.style.display = "block";
+                preview.src = url;
+            }
+
+            preview.addEventListener("error", showFallback);
+            showPreview(input.value);
+            input.addEventListener("input", function () {
+                showPreview(input.value.trim());
+            });
+        })();
+    </script>
+}

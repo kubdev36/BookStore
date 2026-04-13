@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = "Thanh toán VietQR";
+}
+
+<main class="detailx-page">
+    <section class="detailx-wrap">
+        <div class="container dc-container">
+            <div class="vietqr-wrap">
+                <p class="detailx-kicker">THANH TOÁN QR PAY</p>
+                <h1>Quét mã để hoàn tất đơn hàng</h1>
+                <p>Vui lòng chuyển đúng số tiền và nội dung để hệ thống đối soát nhanh hơn.</p>
+
+                <div class="vietqr-grid mt-4">
+                    <div class="detailx-panel text-center">
+                        <img src="@ViewBag.QrImageUrl" alt="Mã thanh toán VietQR" class="vietqr-image" />
+                    </div>
+                    <div class="detailx-panel">
+                        <h2 class="detailx-side-title">Thông tin chuyển khoản</h2>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span>Mã đơn hàng</span>
+                                <strong>#@ViewBag.OrderId</strong>
+                            </li>
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span>Ngân hàng</span>
+                                <strong>@ViewBag.BankId</strong>
+                            </li>
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span>Số tài khoản</span>
+                                <strong>@ViewBag.AccountNumber</strong>
+                            </li>
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span>Chủ tài khoản</span>
+                                <strong>@ViewBag.AccountName</strong>
+                            </li>
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span>Số tiền</span>
+                                <strong>@(((decimal)ViewBag.Amount).ToString("N0")) VND</strong>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <span>Nội dung</span>
+                                <div class="vietqr-note">@ViewBag.TransferContent</div>
+                            </li>
+                        </ul>
+                        <div class="detailx-actions mt-3">
+                            <a asp-action="OrderSuccess" asp-route-id="@ViewBag.OrderId" class="detailx-btn-gold">Tôi đã chuyển khoản</a>
+                            <a asp-action="Index" class="detailx-btn-line">Quay lại giỏ hàng</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>

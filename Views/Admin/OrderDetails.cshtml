@@ -1,0 +1,101 @@
+﻿@model BookStore.Models.Order
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<section class="adminx-wrap">
+    <aside class="adminx-sidebar">
+        <div>
+            <a asp-controller="Books" asp-action="Index" class="adminx-brand">Quản lý kho sách</a>
+            <div class="adminx-role">Quản trị biên tập</div>
+        </div>
+
+        <nav class="adminx-menu">
+            <a class="adminx-menu-item" asp-action="Dashboard">Bảng điều khiển</a>
+            <a class="adminx-menu-item" asp-action="Index">Kho sách</a>
+            <a class="adminx-menu-item active" asp-action="Orders">Đơn hàng</a>
+        </nav>
+
+        <div class="adminx-side-foot">
+            <a class="adminx-menu-item" asp-controller="Home" asp-action="Privacy">Hỗ trợ</a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="adminx-signout">Đăng xuất</button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="adminx-main ordx-main">
+        <header class="adminx-topbar">
+            <div>
+                <h1>The Digital Curator</h1>
+                <div class="adminx-tabs">
+                    <a asp-action="Dashboard">Bảng điều khiển</a>
+                    <span class="active">Báo cáo</span>
+                </div>
+            </div>
+            <div class="invx-tools">
+                <input type="text" placeholder="Tìm kiếm đơn hàng..." />
+                <span>&#128276;</span>
+                <span>&#9881;</span>
+                <span class="adminx-avatar">@User.Identity?.Name?.FirstOrDefault().ToString().ToUpperInvariant()</span>
+            </div>
+        </header>
+
+        <section class="ordx-headline ordx-detail-headline">
+            <div>
+                <p class="invx-breadcrumb">ĐƠN HÀNG &nbsp;&rsaquo;&nbsp; CHI TIẾT</p>
+                <h2>Đơn hàng #ORD-@Model.Id</h2>
+                <p>Đặt lúc @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+            <a asp-action="Orders" class="btn btn-outline-dark">Quay lại danh sách</a>
+        </section>
+
+        <section class="row g-3">
+            <div class="col-lg-4">
+                <article class="ordx-card h-100">
+                    <h3>Thông tin khách hàng</h3>
+                    <p><strong>Tên:</strong> @Model.CustomerName</p>
+                    <p><strong>Email:</strong> @Model.Email</p>
+                    <p><strong>Số điện thoại:</strong> @Model.Phone</p>
+                    <p class="mb-0"><strong>Địa chỉ:</strong> @Model.Address</p>
+                </article>
+            </div>
+
+            <div class="col-lg-8">
+                <article class="ordx-card">
+                    <h3>Sách trong đơn hàng này</h3>
+                    <div class="table-responsive mt-2">
+                        <table class="table invx-table ordx-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Sách</th>
+                                    <th class="text-end">Đơn giá</th>
+                                    <th class="text-center">SL</th>
+                                    <th class="text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>@item.BookTitle</td>
+                                        <td class="text-end">@item.UnitPrice.ToString("N0")</td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        <td class="text-end">@((item.UnitPrice * item.Quantity).ToString("N0"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" class="text-end">Tổng cộng</th>
+                                    <th class="text-end text-danger">@Model.TotalAmount.ToString("N0") VND</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </div>
+</section>

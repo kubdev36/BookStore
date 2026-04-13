@@ -1,0 +1,114 @@
+﻿@{
+    ViewData["Title"] = "Giới thiệu";
+}
+
+<main class="aboutx-page">
+    <section class="aboutx-hero">
+        <div class="container dc-container">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-6">
+                    <p class="aboutx-kicker">SỨ MỆNH CỦA CHÚNG TÔI</p>
+                    <h1>
+                        Gìn giữ
+                        <em>Tinh hoa</em>
+                        của
+                        trang sách.
+                    </h1>
+                    <p>
+                        Trong thời đại số đầy nhiễu động, chúng tôi tuyển chọn những giá trị bền vững.
+                        The Digital Curator ra đời để kết nối chiều sâu của thư viện truyền thống với trải nghiệm hiện đại.
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="aboutx-image-stack">
+                        <img class="aboutx-main-image" src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=1200" alt="Sách" />
+                        <img class="aboutx-note-image" src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800" alt="Sách mở" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="aboutx-section">
+        <div class="container dc-container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h2 class="aboutx-heading">Nghệ thuật tuyển chọn</h2>
+                </div>
+                <div class="col-lg-8">
+                    <p class="aboutx-quote">"Mỗi cuốn sách được chọn là một lời khẳng định về giá trị tri thức và thời gian đọc chất lượng."</p>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <p class="aboutx-copy">Chúng tôi đánh giá từng đầu sách dựa trên chiều sâu nội dung, giá trị học thuật và thẩm mỹ xuất bản.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="aboutx-copy">Mỗi tác phẩm đều được lựa chọn để trở thành một phần đáng giá trong tủ sách cá nhân lâu dài.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="aboutx-section aboutx-founder">
+        <div class="container dc-container">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-5">
+                    <p class="aboutx-kicker">NGƯỜI SÁNG LẬP</p>
+                    <h3 class="aboutx-title">Một đời gắn với trang sách</h3>
+                    <p class="aboutx-copy">Eleanor Thorne sáng lập The Digital Curator với mong muốn xây dựng không gian đọc tinh chọn cho cộng đồng yêu sách.</p>
+                    <p class="aboutx-copy">"Tôi muốn tạo nên một hiệu sách như phòng đọc riêng, nơi mỗi cuốn sách đều xứng đáng để dành thời gian."</p>
+                    <a asp-controller="Books" asp-action="Index" class="aboutx-link">Đọc thư từ người sáng lập</a>
+                </div>
+                <div class="col-lg-7">
+                    <div class="aboutx-founder-photo-wrap">
+                        <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=1400" alt="Người sáng lập" class="aboutx-founder-photo" />
+                        <div class="aboutx-founder-badge">Eleanor Thorne<br><span>NHÀ SÁNG LẬP & BIÊN TẬP CHÍNH</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="aboutx-section">
+        <div class="container dc-container">
+            <h3 class="aboutx-center-title">Trải nghiệm kép</h3>
+            <p class="aboutx-center-sub">Nơi khám phá số gặp gỡ cảm xúc đọc sách trên giấy.</p>
+
+            <div class="aboutx-dual-grid">
+                <article class="aboutx-card aboutx-card-large" style="background-image:url('https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=1400');">
+                    <div>
+                        <h4>Phòng đọc</h4>
+                        <p>Không gian dành cho trải nghiệm đọc sâu.</p>
+                    </div>
+                </article>
+                <article class="aboutx-card aboutx-card-light">
+                    <h4>Kho lưu trữ số</h4>
+                    <p>Mỗi đầu sách đều có nội dung đồng hành giúp mở rộng trải nghiệm đọc và nghiên cứu.</p>
+                </article>
+                <article class="aboutx-card aboutx-card-dark">
+                    <h4>Tạp chí tuyển chọn</h4>
+                </article>
+                <article class="aboutx-card" style="background-image:url('https://images.unsplash.com/photo-1455390582262-044cdead277a?w=900');"></article>
+            </div>
+        </div>
+    </section>
+
+    <section class="aboutx-cta">
+        <div class="container dc-container text-center">
+            <h3>Bắt đầu xây dựng tủ sách</h3>
+            <p>Tham gia cộng đồng yêu sách và nhận bản tin tuyển chọn hằng tuần.</p>
+            <form class="aboutx-cta-form" onsubmit="return false;">
+                <input type="email" placeholder="Email của bạn" />
+                <button type="submit">Đăng ký nhận tin</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="aboutx-foot">
+        <div class="container dc-container d-flex flex-wrap justify-content-between gap-2">
+            <div>The Digital Curator<br><span>&copy; 2026 The Digital Curator. Đã đăng ký bản quyền.</span></div>
+            <div class="aboutx-foot-links">Tạp chí &nbsp;&nbsp; Liên hệ &nbsp;&nbsp; Chính sách bảo mật &nbsp;&nbsp; Điều khoản dịch vụ</div>
+        </div>
+    </section>
+</main>

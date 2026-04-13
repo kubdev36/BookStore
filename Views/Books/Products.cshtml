@@ -1,0 +1,217 @@
+﻿@model BookStore.Models.BooksIndexViewModel
+@{
+    ViewData["Title"] = "Sản phẩm";
+    var currentSort = ((string?)ViewBag.Sort ?? "newest").ToLowerInvariant();
+    int? minPrice = ViewBag.MinPrice is int min ? min : null;
+    int? maxPrice = ViewBag.MaxPrice is int max ? max : null;
+    var currentPage = ViewBag.CurrentPage is int page ? page : 1;
+    var totalPages = ViewBag.TotalPages is int pages ? pages : 1;
+    var totalItems = ViewBag.TotalItems is int total ? total : Model.Books.Count;
+    var products = Model.Books.ToList();
+
+    bool IsRange(int? min, int? max) => minPrice == min && maxPrice == max;
+}
+
+<main class="prodx-page">
+    <section class="prodx-shell">
+        <div class="container dc-container">
+            <header class="prodx-hero">
+                <div>
+                    <h1>Danh mục sách</h1>
+                    <p>
+                        Bộ sưu tập hoàn chỉnh của chúng tôi là kho lưu trữ sống của tri thức nhân loại.
+                        Từ những ấn bản hiếm được đóng thủ công đến các tác phẩm đương đại, mỗi đầu sách
+                        đều được tuyển chọn kỹ lưỡng về giá trị nội dung và thẩm mỹ.
+                    </p>
+                </div>
+                <div class="prodx-display-meta">
+                    <span></span>
+                    <strong>HIỂN THỊ @totalItems TỰA SÁCH</strong>
+                </div>
+            </header>
+
+            <section class="prodx-layout">
+                <aside class="prodx-sidebar">
+                    <div class="prodx-side-block">
+                        <h2>Bộ sưu tập</h2>
+                        <div class="prodx-cat-list">
+                            <a class="@(Model.SelectedCategoryId is null ? "active" : null)"
+                               asp-controller="Books"
+                               asp-action="Products"
+                               asp-route-sort="@currentSort"
+                               asp-route-minPrice="@minPrice"
+                               asp-route-maxPrice="@maxPrice"
+                               asp-route-keyword="@Model.Keyword"
+                               asp-route-page="1">Tất cả sản phẩm</a>
+                            @foreach (var category in Model.Categories)
+                            {
+                                <a class="@(Model.SelectedCategoryId == category.Id ? "active" : null)"
+                                   asp-controller="Books"
+                                   asp-action="Products"
+                                   asp-route-categoryId="@category.Id"
+                                   asp-route-sort="@currentSort"
+                                   asp-route-minPrice="@minPrice"
+                                   asp-route-maxPrice="@maxPrice"
+                                   asp-route-keyword="@Model.Keyword"
+                                   asp-route-page="1">@category.Name</a>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="prodx-side-block">
+                        <h2>Khoảng giá</h2>
+                        <div class="prodx-price-line"></div>
+                        <div class="prodx-range-list">
+                            <a class="@(IsRange(null, null) ? "active" : null)"
+                               asp-controller="Books"
+                               asp-action="Products"
+                               asp-route-categoryId="@Model.SelectedCategoryId"
+                               asp-route-sort="@currentSort"
+                               asp-route-keyword="@Model.Keyword"
+                               asp-route-page="1">Tất cả mức giá</a>
+                            <a class="@(IsRange(null, 500000) ? "active" : null)"
+                               asp-controller="Books"
+                               asp-action="Products"
+                               asp-route-categoryId="@Model.SelectedCategoryId"
+                               asp-route-sort="@currentSort"
+                               asp-route-maxPrice="500000"
+                               asp-route-keyword="@Model.Keyword"
+                               asp-route-page="1">Dưới 500k</a>
+                            <a class="@(IsRange(500000, 1000000) ? "active" : null)"
+                               asp-controller="Books"
+                               asp-action="Products"
+                               asp-route-categoryId="@Model.SelectedCategoryId"
+                               asp-route-sort="@currentSort"
+                               asp-route-minPrice="500000"
+                               asp-route-maxPrice="1000000"
+                               asp-route-keyword="@Model.Keyword"
+                               asp-route-page="1">500k - 1M</a>
+                            <a class="@(IsRange(1000000, 2000000) ? "active" : null)"
+                               asp-controller="Books"
+                               asp-action="Products"
+                               asp-route-categoryId="@Model.SelectedCategoryId"
+                               asp-route-sort="@currentSort"
+                               asp-route-minPrice="1000000"
+                               asp-route-maxPrice="2000000"
+                               asp-route-keyword="@Model.Keyword"
+                               asp-route-page="1">1M - 2M</a>
+                            <a class="@(IsRange(2000000, null) ? "active" : null)"
+                               asp-controller="Books"
+                               asp-action="Products"
+                               asp-route-categoryId="@Model.SelectedCategoryId"
+                               asp-route-sort="@currentSort"
+                               asp-route-minPrice="2000000"
+                               asp-route-keyword="@Model.Keyword"
+                               asp-route-page="1">2M+</a>
+                        </div>
+                        <div class="prodx-price-labels">
+                            <span>@((minPrice?.ToString("N0") ?? "0") + " VND")</span>
+                            <span>@((maxPrice?.ToString("N0") ?? "TỐI ĐA") + " VND")</span>
+                        </div>
+                    </div>
+
+                    <div class="prodx-side-block">
+                        <h2>Tình trạng</h2>
+                        <div class="prodx-chips">
+                            <span>Còn hàng</span>
+                            <span>Đặt trước</span>
+                            <span class="active">Bản hiếm</span>
+                        </div>
+                    </div>
+                </aside>
+
+                <div class="prodx-main">
+                    <div class="prodx-toolbar">
+                        <div class="prodx-sort">
+                            <small>Sắp xếp:</small>
+                            <a asp-controller="Books" asp-action="Products" asp-route-categoryId="@Model.SelectedCategoryId" asp-route-sort="newest" asp-route-minPrice="@minPrice" asp-route-maxPrice="@maxPrice" asp-route-keyword="@Model.Keyword" asp-route-page="1" class="@(currentSort == "newest" ? "active" : null)">Mới nhất</a>
+                            <a asp-controller="Books" asp-action="Products" asp-route-categoryId="@Model.SelectedCategoryId" asp-route-sort="price" asp-route-minPrice="@minPrice" asp-route-maxPrice="@maxPrice" asp-route-keyword="@Model.Keyword" asp-route-page="1" class="@(currentSort == "price" ? "active" : null)">Giá</a>
+                            <a asp-controller="Books" asp-action="Products" asp-route-categoryId="@Model.SelectedCategoryId" asp-route-sort="relevance" asp-route-minPrice="@minPrice" asp-route-maxPrice="@maxPrice" asp-route-keyword="@Model.Keyword" asp-route-page="1" class="@(currentSort == "relevance" ? "active" : null)">Liên quan</a>
+                        </div>
+                    </div>
+
+                    @if (products.Count == 0)
+                    {
+                        <div class="alert alert-warning">Không tìm thấy sách phù hợp.</div>
+                    }
+                    else
+                    {
+                        <div class="prodx-grid">
+                            @foreach (var book in products)
+                            {
+                                var badge = book.Stock > 0 ? "CÒN HÀNG" : "BẢN HIẾM";
+                                <article class="prodx-card">
+                                    <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="prodx-image-link">
+                                        <img src="@(string.IsNullOrWhiteSpace(book.CoverUrl) ? "https://placehold.co/760x980?text=S%C3%A1ch" : book.CoverUrl)"
+                                             alt="@book.Title"
+                                             onerror="this.onerror=null;this.src='https://placehold.co/760x980?text=S%C3%A1ch';" />
+                                        <span class="prodx-badge">@badge</span>
+                                    </a>
+                                    <h3>@book.Title</h3>
+                                    <p>@book.Author</p>
+                                    <div class="prodx-row">
+                                        <strong>@book.Price.ToString("N0") VND</strong>
+                                        <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id">Chi tiết</a>
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    }
+
+                    <div class="prodx-pagination">
+                        <p>TRANG @currentPage / @totalPages</p>
+                        <div>
+                            @if (currentPage > 1)
+                            {
+                                <a asp-controller="Books" asp-action="Products" asp-route-categoryId="@Model.SelectedCategoryId" asp-route-sort="@currentSort" asp-route-minPrice="@minPrice" asp-route-maxPrice="@maxPrice" asp-route-keyword="@Model.Keyword" asp-route-page="@(currentPage - 1)">Trước</a>
+                            }
+                            else
+                            {
+                                <span class="disabled">Trước</span>
+                            }
+
+                            @for (var i = 1; i <= totalPages; i++)
+                            {
+                                if (i == currentPage)
+                                {
+                                    <span class="active">@i.ToString("00")</span>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Books" asp-action="Products" asp-route-categoryId="@Model.SelectedCategoryId" asp-route-sort="@currentSort" asp-route-minPrice="@minPrice" asp-route-maxPrice="@maxPrice" asp-route-keyword="@Model.Keyword" asp-route-page="@i">@i.ToString("00")</a>
+                                }
+                            }
+
+                            @if (currentPage < totalPages)
+                            {
+                                <a asp-controller="Books" asp-action="Products" asp-route-categoryId="@Model.SelectedCategoryId" asp-route-sort="@currentSort" asp-route-minPrice="@minPrice" asp-route-maxPrice="@maxPrice" asp-route-keyword="@Model.Keyword" asp-route-page="@(currentPage + 1)">Sau</a>
+                            }
+                            else
+                            {
+                                <span class="disabled">Sau</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <footer class="prodx-footer">
+        <div class="container dc-container">
+            <div class="prodx-foot-inner">
+                <strong>The Digital Curator</strong>
+                <div>
+                    <span>Điều khoản dịch vụ</span>
+                    <span>Chính sách bảo mật</span>
+                    <span>Vận chuyển & hoàn trả</span>
+                    <span>Liên hệ</span>
+                </div>
+                <span>&copy;2024 The Digital Curator. Đã đăng ký bản quyền.</span>
+            </div>
+        </div>
+    </footer>
+</main>
+
+
+

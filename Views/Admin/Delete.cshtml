@@ -1,0 +1,22 @@
+﻿@model BookStore.Models.Book
+@{
+    ViewData["Title"] = "Xóa sách";
+}
+
+<h1 class="h3 mb-3 text-danger">Xác nhận xóa sách</h1>
+
+<div class="card p-3">
+    <p>Bạn có chắc chắn muốn xóa sách <strong>@Model.Title</strong> không?</p>
+
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+    </form>
+</div>
+
+
+
+
+
+
+

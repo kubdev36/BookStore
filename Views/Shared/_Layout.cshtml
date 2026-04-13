@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BookStore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BookStore.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="dc-nav-wrap">
+        <nav class="navbar navbar-expand-lg dc-nav">
+            <div class="container dc-container">
+                <a class="navbar-brand dc-brand" asp-controller="Books" asp-action="Index">The Digital Curator</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Chuyển điều hướng">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav dc-main-links">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Products">Sản phẩm</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Cart" asp-action="Index">Lưu trữ</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">Tạp chí</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="About">Giới thiệu</a></li>
+                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole(BookStore.Models.UserRoles.Admin))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Dashboard">Quản trị</a></li>
+                        }
+                    </ul>
+
+                    <div class="ms-auto d-flex align-items-center gap-2 dc-right-controls">
+                        <form asp-controller="Books" asp-action="Products" method="get" class="dc-head-search" data-autocomplete="books" data-suggest-url="@Url.Action("Suggest", "Books")">
+                            <input type="text" name="keyword" value="@Context.Request.Query["keyword"]" placeholder="Tìm kiếm sách..." autocomplete="off" />
+                            <div class="dc-search-dropdown" hidden></div>
+                        </form>
+                        <a class="dc-cart-btn" asp-controller="Cart" asp-action="Index" title="Giỏ hàng">
+                            <span class="dc-cart-icon">&#128722;</span>
+                            <span>Giỏ hàng</span>
+                        </a>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="dc-user-menu" data-user-menu>
+                                <button type="button" class="dc-user-trigger" aria-label="Mở menu tài khoản" aria-expanded="false">
+                                    <span class="dc-user-icon" title="@User.Identity?.Name" aria-label="Tài khoản người dùng">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                            <circle cx="12" cy="8" r="4"></circle>
+                                            <path d="M4.5,20c0-4.1,3.4-7,7.5-7s7.5,2.9,7.5,7"></path>
+                                        </svg>
+                                    </span>
+                                </button>
+                                <div class="dc-user-dropdown" hidden>
+                                    <div class="dc-user-name">@User.Identity?.Name</div>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dc-logout-btn">Đăng xuất</button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <a class="dc-auth-link dc-login-btn" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    @{
+        var success = TempData["SuccessMessage"] as string;
+        var error = TempData["ErrorMessage"] as string;
+    }
+    @if (!string.IsNullOrWhiteSpace(success) || !string.IsNullOrWhiteSpace(error))
+    {
+        <div class="toast-notify-wrap">
+            @if (!string.IsNullOrWhiteSpace(success))
+            {
+                <div class="toast-notify toast-notify-success" role="status" aria-live="polite">
+                    <div class="toast-notify-title">Thông báo</div>
+                    <div class="toast-notify-text">@success</div>
+                    <button type="button" class="toast-notify-close" aria-label="Đóng">&times;</button>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(error))
+            {
+                <div class="toast-notify toast-notify-error" role="alert" aria-live="assertive">
+                    <div class="toast-notify-title">Lưu ý</div>
+                    <div class="toast-notify-text">@error</div>
+                    <button type="button" class="toast-notify-close" aria-label="Đóng">&times;</button>
+                </div>
+            }
+        </div>
+    }
+
+    @RenderBody()
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var toasts = document.querySelectorAll('.toast-notify');
+            toasts.forEach(function (toast) {
+                var closeBtn = toast.querySelector('.toast-notify-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function () {
+                        toast.classList.add('is-hiding');
+                        setTimeout(function () { toast.remove(); }, 280);
+                    });
+                }
+                setTimeout(function () {
+                    if (document.body.contains(toast)) {
+                        toast.classList.add('is-hiding');
+                        setTimeout(function () { toast.remove(); }, 280);
+                    }
+                }, 3200);
+            });
+        })();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,96 @@
+﻿@model BookStore.Models.CheckoutInputModel
+@{
+    ViewData["Title"] = "Thanh toán";
+    var cartItems = ViewBag.CartItems as List<BookStore.Models.CartItemViewModel> ?? new();
+    var totalAmount = (decimal)(ViewBag.TotalAmount ?? 0m);
+}
+
+<main class="detailx-page">
+    <section class="detailx-wrap">
+        <div class="container dc-container">
+            <div class="detailx-headline">
+                <p class="detailx-kicker">THANH TOÁN</p>
+                <h1>Hoàn tất đơn hàng</h1>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <form asp-action="Checkout" method="post" class="detailx-panel">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="CustomerName" class="form-label">Họ và tên</label>
+                                <input asp-for="CustomerName" class="form-control" />
+                                <span asp-validation-for="CustomerName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Phone" class="form-label">Số điện thoại</label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Email" class="form-label">Email</label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Address" class="form-label">Địa chỉ nhận hàng</label>
+                                <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Phương thức thanh toán</label>
+                                <div class="pay-method-list">
+                                    <label class="pay-method-item">
+                                        <input asp-for="PaymentMethod" type="radio" value="@BookStore.Models.PaymentMethods.CashOnDelivery" />
+                                        <span>
+                                            <strong>Thanh toán khi nhận hàng (COD)</strong>
+                                            <small>Thanh toán trực tiếp cho nhân viên giao hàng.</small>
+                                        </span>
+                                    </label>
+                                    <label class="pay-method-item">
+                                        <input asp-for="PaymentMethod" type="radio" value="@BookStore.Models.PaymentMethods.VietQr" />
+                                        <span>
+                                            <strong>QR Pay (VietQR)</strong>
+                                            <small>Sau khi đặt, hệ thống hiển thị mã QR để bạn chuyển khoản.</small>
+                                        </span>
+                                    </label>
+                                </div>
+                                <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="detailx-actions mt-3">
+                            <button class="detailx-btn-gold" type="submit">Đặt hàng</button>
+                            <a asp-action="Index" class="detailx-btn-line">Quay lại giỏ hàng</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="detailx-panel">
+                        <h2 class="detailx-side-title">Tóm tắt đơn hàng</h2>
+                        <ul class="list-group list-group-flush mb-2">
+                            @foreach (var item in cartItems)
+                            {
+                                <li class="list-group-item px-0 d-flex justify-content-between">
+                                    <span>@item.Title x @item.Quantity</span>
+                                    <strong>@item.LineTotal.ToString("N0")</strong>
+                                </li>
+                            }
+                        </ul>
+                        <div class="d-flex justify-content-between pt-2 border-top">
+                            <span class="fw-semibold">Tổng cộng</span>
+                            <span class="fw-semibold">@totalAmount.ToString("N0") VND</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
